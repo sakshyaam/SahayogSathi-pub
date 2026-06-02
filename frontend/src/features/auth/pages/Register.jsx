@@ -1,12 +1,34 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth.js";
 
 const Register = () => {
+  const navigate = useNavigate();
+  const { handleRegister, loading } = useAuth();
 
-    const navigate = useNavigate();
+  const [fullname, setFullname] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      await handleRegister({
+        fullname,
+        username,
+        email,
+        password,
+      });
+
+      navigate("/login");
+    } catch (error) {
+      console.log("REGISTER FAILED:", error.response?.data || error.message);
+    }
+  };
+
   return (
-
     <div className="min-h-screen bg-white text-black">
       <div className="mx-auto flex min-h-screen max-w-md items-center px-6 py-12 sm:px-8">
         <div className="w-full">
@@ -22,18 +44,20 @@ const Register = () => {
             </p>
           </div>
 
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
               <label
-                htmlFor="fullName"
+                htmlFor="fullname"
                 className="mb-2 block text-sm font-medium text-zinc-800"
               >
                 Full name
               </label>
               <input
-                id="fullName"
+                id="fullname"
                 type="text"
                 placeholder="Your full name"
+                value={fullname}
+                onChange={(e) => setFullname(e.target.value)}
                 className="w-full rounded-2xl border border-zinc-300 bg-white px-4 py-3 text-sm text-black outline-none transition focus:border-black focus:ring-0"
               />
             </div>
@@ -49,6 +73,8 @@ const Register = () => {
                 id="username"
                 type="text"
                 placeholder="Choose a username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="w-full rounded-2xl border border-zinc-300 bg-white px-4 py-3 text-sm text-black outline-none transition focus:border-black focus:ring-0"
               />
             </div>
@@ -64,6 +90,8 @@ const Register = () => {
                 id="email"
                 type="email"
                 placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full rounded-2xl border border-zinc-300 bg-white px-4 py-3 text-sm text-black outline-none transition focus:border-black focus:ring-0"
               />
             </div>
@@ -79,22 +107,25 @@ const Register = () => {
                 id="password"
                 type="password"
                 placeholder="Create a password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full rounded-2xl border border-zinc-300 bg-white px-4 py-3 text-sm text-black outline-none transition focus:border-black focus:ring-0"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full rounded-2xl bg-black px-4 py-3 text-sm font-medium text-white transition hover:bg-zinc-800"
+              disabled={loading}
+              className="w-full rounded-2xl bg-black px-4 py-3 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:opacity-50"
             >
-              Create account
+              {loading ? "Creating..." : "Create account"}
             </button>
           </form>
 
           <p className="mt-8 text-center text-sm text-zinc-600">
             Already have an account?{" "}
             <Link
-              to={'/login'}
+              to="/login"
               className="font-medium text-black underline underline-offset-4"
             >
               Sign in
