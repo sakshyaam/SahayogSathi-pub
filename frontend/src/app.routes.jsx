@@ -4,7 +4,7 @@ import { createBrowserRouter } from 'react-router-dom'
 import Register from './features/auth/pages/Register.jsx'
 import LandingPage from './features/auth/pages/LandingPage.jsx'
 import Dashboard from './features/auth/pages/Dashboard.jsx'
-
+import ProtectedRoute from './features/auth/components/ProtectedRoute.jsx'
 
 
 export const router = createBrowserRouter([
@@ -23,6 +23,8 @@ export const router = createBrowserRouter([
     },
     {
         path : "/dashboard",
-        element : <Dashboard />
+        element : <ProtectedRoute>
+            <Dashboard />
+        </ProtectedRoute>
     }
 ])
