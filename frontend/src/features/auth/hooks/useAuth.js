@@ -10,12 +10,15 @@ export const useAuth = () =>{
 
     const handleLogin = async ({email,password}) =>{
 
-        setLoading(true)
+       try {
 
-        const data = await login({email, password})
-
-        setUser(data.user);
-        setLoading(false);
+         setLoading(true)
+         const data = await login({email, password})
+         setUser(data); 
+         return data
+       } finally {
+            setLoading(false);
+       }
     }
 
 
