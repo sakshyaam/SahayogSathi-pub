@@ -83,14 +83,6 @@ const postSchema = new Schema(
       default: null,
     },
 
-    tags: [
-      {
-        type: String,
-        trim: true,
-        index: true,
-      },
-    ],
-
     isUrgent: {
       type: Boolean,
       default: false,
