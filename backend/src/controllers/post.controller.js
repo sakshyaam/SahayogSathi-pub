@@ -189,6 +189,45 @@ const createPost = asyncHandler(async (req, res) => {
   })
 
 
+  const deletePost = asyncHandler(async (req,res) =>{
+
+        const { postId } = req.params
+
+
+      if(!postId)
+      {
+        throw new ApiError(400,"Post not selection")
+      }
+
+      if(!mongoose.Types.ObjectId.isValid(postId)){
+        throw new ApiError(400, "postId is invalid")
+      }
+
+      const post = await Post.findById(postId)
+
+      if(!post) {
+      throw new ApiError(400, "Post Not Found")
+
+      }
+
+    if(post.postedBy.toString() !== req.user._id.toString()) {
+      throw new ApiError(403, "You are not allowed to delete this post")  
+
+    }
+
+    if (post.status !== "open") {
+    throw new ApiError(400, "Only open posts can be deleted");
+   }
+
+   post.status = "close"
+
+   await post.save()
+
+   return res.status(200).json(new ApiResponse(200, "post closed Successfully"))
+
+  })
+
+  
 
 
 
