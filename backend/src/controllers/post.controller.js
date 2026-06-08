@@ -97,7 +97,7 @@ const createPost = asyncHandler(async (req, res) => {
 });
 
 
-  const updatePost = asyncHandler(async(req, res) =>{
+const updatePost = asyncHandler(async(req, res) =>{
 
     const { postId } = req.params
 
@@ -189,7 +189,7 @@ const createPost = asyncHandler(async (req, res) => {
   })
 
 
-  const deletePost = asyncHandler(async (req,res) =>{
+const deletePost = asyncHandler(async (req,res) =>{
 
         const { postId } = req.params
 
@@ -227,10 +227,58 @@ const createPost = asyncHandler(async (req, res) => {
 
   })
 
+
+
+const getAllPost = asyncHandler(async(req,res) =>{
+        const { category, location, status, sort} = req.query
+
+        const filter = {}
+
+        if(category) filter.category = category
+        if(location) filter.location = location 
+
+        if(status){
+          filter.status = status
+        } else{
+          filter.status = "open"
+        }
+
+
+        const sortOption = sort === "oldest" ? { createdAt: 1 } : { createdAt: -1 };
+
+  const posts = await Post.find(filter)
+    .sort(sortOption)
+    .populate("postedBy", "fullname university avatar averageRating");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, posts, "Posts fetched successfully"));
   
+})
 
+const getPostDetails = asyncHandler(async (req, res) => {
+  const { postId } = req.params;
 
+  if (!mongoose.Types.ObjectId.isValid(postId)) {
+    throw new ApiError(400, "Invalid post ID");
+  }
 
-export { createPost,
-  updatePost
+  const post = await Post.findById(postId)
+    .populate("postedBy", "fullname username avatar university averageRating")
+    .lean();
+
+  if (!post) {
+    throw new ApiError(404, "Post not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, post, "Post details fetched successfully"));
+});
+
+export { 
+  createPost,
+  updatePost,
+  getAllPost,
+  getPostDetails
 };
