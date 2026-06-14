@@ -81,3 +81,7 @@ const getConversationUsers = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, users, "Conversation users fetched"));
 });
+
+export {
+    sendMessage, getConversationUsers, getMessage
+}
