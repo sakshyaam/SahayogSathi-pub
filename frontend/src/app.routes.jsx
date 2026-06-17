@@ -8,7 +8,7 @@ import ProtectedRoute from './features/auth/components/ProtectedRoute.jsx'
 import CreatePost from './features/auth/pages/CreatePost.jsx'
 import MyPosts from './features/auth/pages/MyPosts.jsx'
 import PostDetails from './features/auth/pages/PostDetails.jsx'
-
+import Chat from './features/auth/pages/Chat.jsx'
 
 export const router = createBrowserRouter([
     {
@@ -46,6 +46,12 @@ export const router = createBrowserRouter([
         path : "/post/:postId",
         element : <ProtectedRoute>
             <PostDetails />
+        </ProtectedRoute>
+    },
+    {
+        path : "/chat",
+        element : <ProtectedRoute>
+            <Chat />
         </ProtectedRoute>
     }
 ])

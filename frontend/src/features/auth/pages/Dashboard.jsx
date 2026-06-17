@@ -67,6 +67,12 @@ const Dashboard = () => {
 							</p>
 						</div>
 						<div className="flex items-center gap-4">
+							<Link
+								to="/chat"
+								className="rounded-full border border-zinc-200 bg-white px-6 py-3 text-sm font-medium text-zinc-600 transition hover:border-zinc-400 hover:text-black"
+							>
+								Messages
+							</Link>
 							<button
 								onClick={onLogout}
 								className="rounded-full border border-zinc-200 bg-white px-6 py-3 text-sm font-medium text-zinc-600 transition hover:border-zinc-400 hover:text-black"
