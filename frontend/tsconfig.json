@@ -20,6 +20,5 @@
     },
     "ignoreDeprecations": "6.0"
   },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src", "vite.config.ts"]
 }
