@@ -186,9 +186,52 @@ const refreshAccessToken = asyncHandler(async(req,res) =>{
             throw new ApiError(401, error?.message ||  "Invalid Refresh Token")
         }
 
-
   } 
     
   )
 
-export  {registerUser, loginUser, logoutUser, refreshAccessToken, getCurrentUser}
+const updateUserProfile = asyncHandler(async (req, res) => {
+    const { fullname, phone, bio, university, faculty, semester, skills } = req.body;
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    if (fullname !== undefined) {
+        if (fullname.trim().length < 2) {
+            throw new ApiError(400, "Fullname must be at least 2 characters");
+        }
+        user.fullname = fullname.trim();
+    }
+    if (phone !== undefined) user.phone = phone.trim();
+    if (bio !== undefined) user.bio = bio.trim();
+    if (university !== undefined) user.university = university.trim();
+    if (faculty !== undefined) user.faculty = faculty.trim();
+    
+    if (semester !== undefined) {
+        const parsedSemester = Number(semester);
+        if (Number.isNaN(parsedSemester) || parsedSemester < 1 || parsedSemester > 12) {
+            throw new ApiError(400, "Semester must be a number between 1 and 12");
+        }
+        user.semester = parsedSemester;
+    }
+    
+    if (skills !== undefined) {
+        if (Array.isArray(skills)) {
+            user.skills = skills.map(skill => skill.trim()).filter(Boolean);
+        } else if (typeof skills === "string") {
+            user.skills = skills.split(",").map(skill => skill.trim()).filter(Boolean);
+        }
+    }
+
+    await user.save();
+
+    const updatedUser = await User.findById(user._id).select("-password -refreshToken");
+
+    return res.status(200).json(
+        new ApiResponse(200, updatedUser, "Profile updated successfully")
+    );
+});
+
+export  {registerUser, loginUser, logoutUser, refreshAccessToken, getCurrentUser, updateUserProfile}
