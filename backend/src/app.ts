@@ -8,6 +8,7 @@ import router from "./routes/user.routes.js";
 import postRouter from "./routes/post.routes.js";
 import messageRouter from "./routes/message.routes.js";
 import proposalRouter from "./routes/proposal.routes.js";
+import { errorHandler } from "./middleware/error.middleware.js";
 
 const corsOptions = {
   origin: process.env.CORS_ORIGIN || "http://localhost:5173",
@@ -27,5 +28,8 @@ app.use("/api/v1/users", router);
 app.use("/api/v1/posts", postRouter);
 app.use("/api/v1/messages", messageRouter);
 app.use("/api/v1/proposals", proposalRouter);
+
+// Global error handler — must be registered AFTER all routes
+app.use(errorHandler);
 
 export default app;
