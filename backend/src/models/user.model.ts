@@ -129,12 +129,11 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
   { timestamps: true }
 );
 
-userSchema.pre("save" as any, async function (this: mongoose.Document & IUser, next: (err?: Error) => void) {
-  if (!this.isModified("password")) return next();
+userSchema.pre("save" as any, async function (this: mongoose.Document & IUser) {
+  if (!this.isModified("password")) return;
   if (this.password) {
     this.password = await bcrypt.hash(this.password, 10);
   }
-  next();
 });
 
 userSchema.methods.isPasswordCorrect = async function (password: string) {
