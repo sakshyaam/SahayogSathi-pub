@@ -73,7 +73,7 @@ const DashboardLayout = () => {
           </div>
 
           {/* Navigation Links */}
-          <nav className="p-4 space-y-1.5 mt-4">
+          <nav className="p-4 space-y-1.5 mt-4 relative">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
@@ -81,18 +81,25 @@ const DashboardLayout = () => {
                 <Link
                   key={item.label}
                   to={item.path}
-                  className={`flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-medium transition-all ${
+                  className={`relative flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-medium transition-colors ${
                     isActive
-                      ? "bg-black text-white shadow-md shadow-black/10"
+                      ? "text-white"
                       : "text-zinc-600 hover:bg-zinc-100 hover:text-black"
                   }`}
                 >
-                  <div className="flex items-center gap-3">
+                  {isActive && (
+                    <motion.div
+                      layoutId="sidebar-active-indicator"
+                      className="absolute inset-0 bg-black rounded-2xl shadow-md shadow-black/10"
+                      transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                    />
+                  )}
+                  <div className="relative z-10 flex items-center gap-3">
                     <Icon className="h-5 w-5" />
                     <span>{item.label}</span>
                   </div>
                   {item.badge !== undefined && item.badge > 0 && (
-                    <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${
+                    <span className={`relative z-10 px-2 py-0.5 text-[10px] font-bold rounded-full ${
                       isActive ? "bg-white text-black" : "bg-rose-500 text-white"
                     }`}>
                       {item.badge}
@@ -167,18 +174,30 @@ const DashboardLayout = () => {
                     <X className="h-6 w-6" />
                   </button>
                 </div>
-                <nav className="space-y-2">
+                <nav className="space-y-2 relative">
                   {navItems.map((item) => {
                     const Icon = item.icon;
+                    const isActive = location.pathname === item.path;
                     return (
                       <Link
                         key={item.label}
                         to={item.path}
                         onClick={() => setSidebarOpen(false)}
-                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-zinc-700 hover:bg-zinc-100"
+                        className={`relative flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+                          isActive ? "text-white" : "text-zinc-700 hover:bg-zinc-100"
+                        }`}
                       >
-                        <Icon className="h-5 w-5" />
-                        <span>{item.label}</span>
+                        {isActive && (
+                          <motion.div
+                            layoutId="mobile-sidebar-active-indicator"
+                            className="absolute inset-0 bg-black rounded-xl shadow-md shadow-black/10"
+                            transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                          />
+                        )}
+                        <div className="relative z-10 flex items-center gap-3 w-full">
+                          <Icon className="h-5 w-5" />
+                          <span>{item.label}</span>
+                        </div>
                       </Link>
                     );
                   })}
