@@ -208,7 +208,7 @@ const PostDetails = () => {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-stone-50">
+      <div className="flex min-h-full items-center justify-center bg-stone-50 py-24">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-zinc-900"></div>
       </div>
     );
@@ -216,7 +216,7 @@ const PostDetails = () => {
 
   if (error || (!post && !loading)) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-stone-50">
+      <div className="flex min-h-full items-center justify-center bg-stone-50 py-24">
         <div className="text-center">
           <p className="text-red-500 font-medium">{error || "Post not found"}</p>
           <Link to="/dashboard" className="mt-4 inline-block text-sm font-semibold text-black underline">
@@ -230,7 +230,7 @@ const PostDetails = () => {
   if (!post) return null;
 
   return (
-    <div className="min-h-screen bg-stone-50 py-12 text-zinc-900">
+    <div className="min-h-full bg-stone-50 py-12 text-zinc-900">
       <main className="mx-auto max-w-4xl px-6 lg:px-8">
         <Link
           to="/dashboard"

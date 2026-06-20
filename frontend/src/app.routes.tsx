@@ -28,22 +28,7 @@ export const router = createBrowserRouter([
     path: "/register",
     element: <Register />
   },
-  {
-    path: "/createpost",
-    element: (
-      <ProtectedRoute>
-        <CreatePost />
-      </ProtectedRoute>
-    )
-  },
-  {
-    path: "/post/:postId",
-    element: (
-      <ProtectedRoute>
-        <PostDetails />
-      </ProtectedRoute>
-    )
-  },
+    // Moved to DashboardLayout children
   {
     path: "/mock-payment",
     element: (
@@ -78,6 +63,14 @@ export const router = createBrowserRouter([
       {
         path: "/chat",
         element: <Chat />
+      },
+      {
+        path: "/createpost",
+        element: <CreatePost />
+      },
+      {
+        path: "/post/:postId",
+        element: <PostDetails />
       },
       {
         path: "/wallet",

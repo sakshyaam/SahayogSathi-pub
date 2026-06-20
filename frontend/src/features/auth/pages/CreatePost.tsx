@@ -91,7 +91,7 @@ const CreatePost = () => {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 text-zinc-900">
+    <div className="min-h-full bg-stone-50 text-zinc-900 pb-12">
       <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
         <div>
           <p className="text-xs font-medium uppercase tracking-[0.2em] text-zinc-500">
