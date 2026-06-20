@@ -4,6 +4,7 @@ import { usePost } from "../hooks/usePost";
 import { AuthContext } from "../auth.context";
 import { createProposal, getPostProposals, acceptProposal } from "../services/proposal.api";
 import { IPost, IProposal, IUser } from "../../../types";
+import api from "../services/auth.api";
 
 interface ProposalFormState {
   coverMessage: string;
@@ -27,6 +28,44 @@ const PostDetails = () => {
     estimatedDeliveryDays: "",
   });
   const [submitting, setSubmitting] = useState(false);
+  
+  const [order, setOrder] = useState<any>(null);
+  const [showSubmitForm, setShowSubmitForm] = useState(false);
+  const [deliverableUrl, setDeliverableUrl] = useState("");
+  const [submittingWork, setSubmittingWork] = useState(false);
+
+  const fetchOrder = async () => {
+    if (!postId) return;
+    try {
+      const res = await api.get(`/api/v1/orders/post/${postId}`);
+      if (res.data.success) {
+        setOrder(res.data.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch order details:", error);
+    }
+  };
+
+  const handleWorkSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!order) return;
+    setSubmittingWork(true);
+    try {
+      const res = await api.post(`/api/v1/orders/${order._id}/submit`, {
+        deliverables: [{ url: deliverableUrl, filename: "Project Deliverable" }]
+      });
+      
+      if (res.data.success) {
+        alert("Work submitted successfully! Client has been notified.");
+        setShowSubmitForm(false);
+        setOrder(res.data.data);
+      }
+    } catch (error: any) {
+      alert(error.response?.data?.message || "Failed to submit work");
+    } finally {
+      setSubmittingWork(false);
+    }
+  };
 
   const fetchProposals = async () => {
     if (!postId) return;
@@ -53,6 +92,10 @@ const PostDetails = () => {
 
           if (currentUser && postedByUser && postedByUser._id === currentUser._id) {
             fetchProposals();
+          }
+
+          if (response.data.status === "in_progress") {
+            fetchOrder();
           }
         }
       } catch (err) {
@@ -254,7 +297,7 @@ const PostDetails = () => {
                             {prop.status === "accepted" ? (
                               <div className="flex gap-4">
                                 <span className="bg-green-100 text-green-700 px-4 py-2 rounded-full font-bold text-sm">Accepted</span>
-                                <Link to="/chat" className="bg-blue-600 text-white px-6 py-2 rounded-full font-bold text-sm hover:bg-blue-700">Chat with Helper</Link>
+                                <Link to="/chat" className="bg-black text-white px-6 py-2 rounded-full font-bold text-sm hover:bg-zinc-800">Chat with Helper</Link>
                               </div>
                             ) : post.status === "open" ? (
                               <button
@@ -334,9 +377,71 @@ const PostDetails = () => {
                       Send a Proposal
                     </button>
                   ) : post.status === "in_progress" && post.acceptedProposal ? (
-                    <div className="bg-blue-50 p-6 rounded-2xl flex justify-between items-center">
-                      <p className="font-semibold text-blue-800">This task is in progress.</p>
-                      <Link to="/chat" className="bg-blue-600 text-white px-8 py-3 rounded-full font-bold hover:bg-blue-700">Go to Chat</Link>
+                    <div className="space-y-4">
+                      <div className="bg-zinc-50 border border-zinc-150 p-6 rounded-2xl flex justify-between items-center">
+                        <div>
+                          <p className="font-semibold text-zinc-800">This task is in progress.</p>
+                          {order && (
+                            <p className="text-xs text-zinc-500 mt-1">
+                              Payment: {order.escrowStatus === "held" ? "Locked in Escrow" : order.escrowStatus} | Status: {order.status}
+                            </p>
+                          )}
+                        </div>
+                        <Link to="/chat" className="bg-black text-white px-8 py-3 rounded-full font-bold hover:bg-zinc-800">Go to Chat</Link>
+                      </div>
+
+                      {/* If the current user is the helper, show Submission form/button */}
+                      {typeof post.acceptedProposal === "object" && 
+                       (post.acceptedProposal as any).helper?._id === currentUser?._id && (
+                        <>
+                          {order?.status === "active" && (
+                            <div className="border border-zinc-200 p-6 rounded-[2rem] bg-white">
+                              <h4 className="font-bold text-lg mb-2">Submit Deliverables</h4>
+                              {showSubmitForm ? (
+                                <form onSubmit={handleWorkSubmit} className="space-y-4">
+                                  <input
+                                    type="url"
+                                    required
+                                    placeholder="Paste your deliverable link (GitHub, Google Drive, etc.)"
+                                    className="w-full border rounded-xl p-3"
+                                    value={deliverableUrl}
+                                    onChange={(e) => setDeliverableUrl(e.target.value)}
+                                  />
+                                  <div className="flex gap-2">
+                                    <button
+                                      type="submit"
+                                      disabled={submittingWork}
+                                      className="bg-black text-white px-6 py-2 rounded-full font-bold text-sm hover:bg-zinc-800 disabled:bg-zinc-400"
+                                    >
+                                      {submittingWork ? "Submitting..." : "Submit Work"}
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => setShowSubmitForm(false)}
+                                      className="border px-6 py-2 rounded-full font-bold text-sm hover:bg-zinc-50"
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
+                                </form>
+                              ) : (
+                                <button
+                                  onClick={() => setShowSubmitForm(true)}
+                                  className="bg-black text-white px-8 py-3 rounded-full font-bold text-sm hover:bg-zinc-800"
+                                >
+                                  Submit Completed Task
+                                </button>
+                              )}
+                            </div>
+                          )}
+
+                          {order?.status === "submitted" && (
+                            <div className="bg-green-50 p-6 rounded-2xl">
+                              <p className="font-semibold text-green-800">You have submitted your deliverables. Waiting for client approval.</p>
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
                   ) : (
                     <p className="text-zinc-500 italic">This post is no longer accepting proposals.</p>

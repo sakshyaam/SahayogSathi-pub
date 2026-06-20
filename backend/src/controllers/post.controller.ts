@@ -207,6 +207,13 @@ const getPostDetails = asyncHandler(async (req: Request, res: Response) => {
 
   const post = await Post.findById(postId)
     .populate("postedBy", "fullname username avatar university averageRating")
+    .populate({
+      path: "acceptedProposal",
+      populate: {
+        path: "helper",
+        select: "fullname username avatar"
+      }
+    })
     .lean();
 
   if (!post) {
@@ -218,9 +225,22 @@ const getPostDetails = asyncHandler(async (req: Request, res: Response) => {
     .json(new ApiResponse(200, post, "Post details fetched successfully"));
 });
 
+const getMyPosts = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.user) {
+    throw new ApiError(401, "Unauthorized");
+  }
+
+  const posts = await Post.find({ postedBy: req.user._id }).sort({ createdAt: -1 });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, posts, "User posts fetched successfully"));
+});
+
 export {
   createPost,
   updatePost,
   getAllPost,
-  getPostDetails
+  getPostDetails,
+  getMyPosts
 };

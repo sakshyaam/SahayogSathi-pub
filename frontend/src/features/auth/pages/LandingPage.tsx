@@ -413,7 +413,7 @@ const LandingPage = () => {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, cubicBezier: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           >
             <h1 className="font-display font-black tracking-tighter text-5xl sm:text-7xl md:text-9xl leading-[0.9] text-white uppercase mt-8 select-none">
               SAHAYOG

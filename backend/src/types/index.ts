@@ -105,3 +105,44 @@ export interface IOrder {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface IPayment {
+  _id: Types.ObjectId;
+  order: Types.ObjectId | IOrder;
+  user: Types.ObjectId | IUser;
+  amount: number;
+  currency: "NPR" | "USD";
+  type: "deposit" | "payout" | "refund";
+  status: "pending" | "success" | "failed";
+  gateway: "khalti" | "esewa" | "stripe" | "wallet";
+  transactionId?: string; // Gateway's transaction ID
+  metadata?: any;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ITransaction {
+  _id: Types.ObjectId;
+  user: Types.ObjectId | IUser;
+  amount: number;
+  type: "credit" | "debit";
+  description: string;
+  referenceId?: Types.ObjectId; // Ref to Order or Payment
+  referenceModel?: "Order" | "Payment";
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface INotification {
+  _id: Types.ObjectId;
+  recipient: Types.ObjectId | IUser;
+  sender: Types.ObjectId | IUser;
+  type: "WORK_SUBMITTED" | "PAYMENT_RECEIVED" | "PROPOSAL_ACCEPTED" | "ORDER_CREATED" | "DISPUTE_RAISED";
+  message: string;
+  referenceId: Types.ObjectId;
+  referenceModel: "Post" | "Order" | "Proposal";
+  isRead: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+

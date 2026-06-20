@@ -9,6 +9,10 @@ import CreatePost from './features/auth/pages/CreatePost';
 import MyPosts from './features/auth/pages/MyPosts';
 import PostDetails from './features/auth/pages/PostDetails';
 import Chat from './features/auth/pages/Chat';
+import MockPayment from './features/auth/pages/MockPayment';
+import NotificationPage from './features/auth/pages/NotificationPage';
+import MyTasks from './features/auth/pages/MyTasks';
+import DashboardLayout from './features/auth/components/DashboardLayout';
 
 export const router = createBrowserRouter([
   {
@@ -24,26 +28,10 @@ export const router = createBrowserRouter([
     element: <Register />
   },
   {
-    path: "/dashboard",
-    element: (
-      <ProtectedRoute>
-        <Dashboard />
-      </ProtectedRoute>
-    )
-  },
-  {
     path: "/createpost",
     element: (
       <ProtectedRoute>
         <CreatePost />
-      </ProtectedRoute>
-    )
-  },
-  {
-    path: "/myposts",
-    element: (
-      <ProtectedRoute>
-        <MyPosts />
       </ProtectedRoute>
     )
   },
@@ -56,11 +44,40 @@ export const router = createBrowserRouter([
     )
   },
   {
-    path: "/chat",
+    path: "/mock-payment",
     element: (
       <ProtectedRoute>
-        <Chat />
+        <MockPayment />
       </ProtectedRoute>
     )
+  },
+  {
+    element: (
+      <ProtectedRoute>
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        path: "/dashboard",
+        element: <Dashboard />
+      },
+      {
+        path: "/my-tasks",
+        element: <MyTasks />
+      },
+      {
+        path: "/myposts",
+        element: <MyPosts />
+      },
+      {
+        path: "/notifications",
+        element: <NotificationPage />
+      },
+      {
+        path: "/chat",
+        element: <Chat />
+      }
+    ]
   }
 ]);

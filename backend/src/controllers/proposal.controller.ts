@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import Proposal from "../models/proposal.model.js";
 import Post from "../models/post.model.js";
 import Conversation from "../models/conversation.model.js";
+import Order from "../models/order.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -129,9 +130,25 @@ const acceptProposal = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 
+  // Create an Order
+  const workDeadline = new Date();
+  workDeadline.setDate(workDeadline.getDate() + proposal.estimatedDeliveryDays);
+
+  const order = await Order.create({
+    post: post._id,
+    proposal: proposal._id,
+    client: ownerId,
+    helper: helperId,
+    agreedAmount: proposal.proposedAmount,
+    currency: post.currency === "NPR" ? "NPR" : "USD", // Match the post's currency or set default
+    status: "pending_payment",
+    escrowStatus: "unpaid",
+    workDeadline,
+  });
+
   return res
     .status(200)
-    .json(new ApiResponse(200, proposal, "Proposal accepted successfully"));
+    .json(new ApiResponse(200, { proposal, order }, "Proposal accepted and order created successfully"));
 });
 
 const getMyProposals = asyncHandler(async (req: Request, res: Response) => {

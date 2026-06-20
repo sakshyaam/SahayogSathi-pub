@@ -8,6 +8,9 @@ import router from "./routes/user.routes.js";
 import postRouter from "./routes/post.routes.js";
 import messageRouter from "./routes/message.routes.js";
 import proposalRouter from "./routes/proposal.routes.js";
+import paymentRouter from "./routes/payment.route.js";
+import orderRouter from "./routes/order.routes.js";
+import notificationRouter from "./routes/notification.routes.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 
 const corsOptions = {
@@ -28,6 +31,9 @@ app.use("/api/v1/users", router);
 app.use("/api/v1/posts", postRouter);
 app.use("/api/v1/messages", messageRouter);
 app.use("/api/v1/proposals", proposalRouter);
+app.use("/api/v1/payments", paymentRouter);
+app.use("/api/v1/orders", orderRouter);
+app.use("/api/v1/notifications", notificationRouter);
 
 // Global error handler — must be registered AFTER all routes
 app.use(errorHandler);
