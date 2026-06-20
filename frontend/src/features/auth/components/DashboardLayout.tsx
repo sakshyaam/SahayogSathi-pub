@@ -11,7 +11,8 @@ import {
   Bell,
   LogOut,
   Menu,
-  X
+  X,
+  Wallet
 } from "lucide-react";
 
 const DashboardLayout = () => {
@@ -53,6 +54,7 @@ const DashboardLayout = () => {
     { label: "My Posts", icon: FileText, path: "/myposts" },
     { label: "Messages", icon: MessageSquare, path: "/chat" },
     { label: "Notifications", icon: Bell, path: "/notifications", badge: unreadNotifications },
+    { label: "Wallet", icon: Wallet, path: "/wallet" },
   ];
 
   if (!user) return <div className="p-10 text-center text-zinc-600 bg-stone-50 min-h-screen">Loading user profile...</div>;

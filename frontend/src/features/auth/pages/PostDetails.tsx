@@ -5,6 +5,7 @@ import { AuthContext } from "../auth.context";
 import { createProposal, getPostProposals, acceptProposal } from "../services/proposal.api";
 import { IPost, IProposal, IUser } from "../../../types";
 import api from "../services/auth.api";
+import { lockEscrow } from "../services/wallet.api";
 
 interface ProposalFormState {
   coverMessage: string;
@@ -33,6 +34,7 @@ const PostDetails = () => {
   const [showSubmitForm, setShowSubmitForm] = useState(false);
   const [deliverableUrl, setDeliverableUrl] = useState("");
   const [submittingWork, setSubmittingWork] = useState(false);
+  const [submittingPayment, setSubmittingPayment] = useState(false);
 
   const fetchOrder = async () => {
     if (!postId) return;
@@ -64,6 +66,61 @@ const PostDetails = () => {
       alert(error.response?.data?.message || "Failed to submit work");
     } finally {
       setSubmittingWork(false);
+    }
+  };
+
+  const handlePayWithWallet = async () => {
+    if (!order) return;
+    setSubmittingPayment(true);
+    try {
+      const res = await lockEscrow(order._id);
+      if (res.success) {
+        alert("Payment locked in Escrow successfully!");
+        fetchOrder();
+      }
+    } catch (error: any) {
+      alert(error.message || error.response?.data?.message || "Insufficient wallet balance. Please top up your wallet.");
+    } finally {
+      setSubmittingPayment(false);
+    }
+  };
+
+  const handleClientPayment = async () => {
+    if (!order) return;
+    try {
+      const initRes = await api.post("/api/v1/payments/initiate", {
+        orderId: order._id,
+        gateway: "khalti"
+      });
+      
+      if (initRes.data.success) {
+        const verifyRes = await api.post("/api/v1/payments/verify", {
+          orderId: order._id,
+          gateway: "khalti",
+          transactionId: `mock_txn_${Date.now()}`
+        });
+
+        if (verifyRes.data.success) {
+          alert("Payment verified successfully! Funds are now locked in Escrow.");
+          fetchOrder();
+        }
+      }
+    } catch (error: any) {
+      alert(error.response?.data?.message || "Payment failed");
+    }
+  };
+
+  const handleReleaseFunds = async () => {
+    if (!order) return;
+    if (!window.confirm("Are you sure you want to approve this work and release payment to the helper?")) return;
+    try {
+      const res = await api.post(`/api/v1/payments/${order._id}/release`, {});
+      if (res.data.success) {
+        alert("Payment released successfully to the helper!");
+        fetchOrder();
+      }
+    } catch (error: any) {
+      alert(error.response?.data?.message || "Failed to release funds");
     }
   };
 
@@ -268,6 +325,110 @@ const PostDetails = () => {
             <div className="mt-16 border-t border-zinc-100 pt-10">
               {isOwner ? (
                 <div>
+                  {/* Order & Escrow Management Card for Client */}
+                  {post.status === "in_progress" && order && (
+                    <div className="mb-10 p-8 rounded-[2rem] border border-zinc-200 bg-white shadow-sm">
+                      <h3 className="text-xl font-bold mb-4">Order & Escrow Status</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 bg-zinc-50 p-6 rounded-2xl">
+                        <div>
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Order Status</p>
+                          <p className="text-sm font-semibold text-black mt-1 capitalize">{order.status.replace("_", " ")}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Escrow Balance</p>
+                          <p className="text-sm font-semibold text-black mt-1">
+                            {order.currency} {order.agreedAmount} ({order.escrowStatus === "held" ? "Locked in Escrow" : order.escrowStatus === "released" ? "Released to Helper" : "Unpaid"})
+                          </p>
+                        </div>
+                      </div>
+
+                      {order.escrowStatus === "unpaid" && (
+                        <div className="space-y-6 mt-6 border-t border-zinc-150 pt-6">
+                          <h4 className="font-bold text-xs text-black uppercase tracking-widest">Order Payment Summary</h4>
+                          
+                          <div className="border border-zinc-200 rounded-3xl bg-stone-50/50 p-6 space-y-3 text-xs">
+                            <div className="flex justify-between text-zinc-500 font-medium">
+                              <span>Task Amount</span>
+                              <span className="font-mono font-semibold text-black">NPR {order.agreedAmount.toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between text-zinc-500 font-medium">
+                              <span>Platform Fee (10% included)</span>
+                              <span className="font-mono font-semibold text-black">NPR {(order.agreedAmount * 0.1).toFixed(2)}</span>
+                            </div>
+                            <div className="border-t border-zinc-200 pt-3 flex justify-between font-bold text-sm">
+                              <span className="text-black">Total Deducted</span>
+                              <span className="font-mono text-black">NPR {order.agreedAmount.toFixed(2)}</span>
+                            </div>
+                            <div className="text-[10px] text-zinc-400 italic mt-2">
+                              Note: The helper will earn NPR {(order.agreedAmount * 0.9).toFixed(2)} (90%) upon completion.
+                            </div>
+                          </div>
+
+                          <div className="space-y-4">
+                            <p className="text-xs text-zinc-500">
+                              {order.status === "submitted" 
+                                ? "The helper has submitted the deliverables, but you must lock the funds in escrow before approving and releasing them."
+                                : "Lock funds in escrow to authorize the helper to begin working on the assignment."}
+                            </p>
+                            <button
+                              onClick={handlePayWithWallet}
+                              disabled={submittingPayment}
+                              className="bg-black hover:bg-zinc-800 text-white px-8 py-3.5 rounded-full font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition w-full sm:w-auto shadow-md"
+                            >
+                              {submittingPayment ? (
+                                <>
+                                  <span className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-t-transparent border-white"></span>
+                                  Locking Escrow...
+                                </>
+                              ) : (
+                                "Pay & Lock Escrow"
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {order.status === "active" && order.escrowStatus === "held" && (
+                        <p className="text-xs text-zinc-500">The helper has been authorized to work. Waiting for work submission.</p>
+                      )}
+
+                      {order.status === "submitted" && (
+                        <div className="space-y-4">
+                          <p className="text-xs text-zinc-500 font-semibold text-amber-700">
+                            {order.escrowStatus === "unpaid" 
+                              ? "The helper has completed the task and submitted deliverables. Please pay the escrow balance above to unlock the approval button."
+                              : "The helper has completed the task and submitted deliverables. Please review and approve to release payment."}
+                          </p>
+                          {order.deliverables && order.deliverables.length > 0 && (
+                            <div className="bg-zinc-50 p-4 rounded-xl border border-zinc-150 mb-4">
+                              <p className="text-xs font-bold text-black mb-1">Deliverables Link:</p>
+                              <a
+                                href={order.deliverables[0].url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs text-blue-600 underline break-all font-semibold"
+                              >
+                                {order.deliverables[0].url}
+                              </a>
+                            </div>
+                          )}
+                          {order.escrowStatus === "held" && (
+                            <button
+                              onClick={handleReleaseFunds}
+                              className="bg-green-600 text-white px-8 py-3 rounded-full font-bold text-sm hover:bg-green-700 transition"
+                            >
+                              Approve Work & Release Payment
+                            </button>
+                          )}
+                        </div>
+                      )}
+
+                      {order.status === "completed" && (
+                        <p className="text-xs text-green-600 font-semibold">Funds have been released to the helper. Order completed successfully!</p>
+                      )}
+                    </div>
+                  )}
+
                   <h2 className="text-2xl font-semibold mb-6">Proposals</h2>
                   <div className="space-y-6">
                     {proposals.length === 0 ? (
@@ -391,12 +552,17 @@ const PostDetails = () => {
                       </div>
 
                       {/* If the current user is the helper, show Submission form/button */}
-                      {typeof post.acceptedProposal === "object" && 
-                       (post.acceptedProposal as any).helper?._id === currentUser?._id && (
+                      {((typeof post.acceptedProposal === "object" && (post.acceptedProposal as any).helper?._id === currentUser?._id) ||
+                        (order && order.helper === currentUser?._id)) && (
                         <>
-                          {order?.status === "active" && (
+                          {(order?.status === "active" || order?.status === "pending_payment") && (
                             <div className="border border-zinc-200 p-6 rounded-[2rem] bg-white">
                               <h4 className="font-bold text-lg mb-2">Submit Deliverables</h4>
+                              {order?.status === "pending_payment" && (
+                                <p className="text-xs text-amber-600 mb-4 bg-amber-50 p-3 rounded-xl border border-amber-200">
+                                  <strong>Notice:</strong> The client has not locked escrow payment yet. You can still submit your deliverables to notify the client and prompt payment.
+                                </p>
+                              )}
                               {showSubmitForm ? (
                                 <form onSubmit={handleWorkSubmit} className="space-y-4">
                                   <input

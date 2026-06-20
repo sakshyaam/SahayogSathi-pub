@@ -13,6 +13,7 @@ import MockPayment from './features/auth/pages/MockPayment';
 import NotificationPage from './features/auth/pages/NotificationPage';
 import MyTasks from './features/auth/pages/MyTasks';
 import DashboardLayout from './features/auth/components/DashboardLayout';
+import Wallet from './features/auth/pages/Wallet';
 
 export const router = createBrowserRouter([
   {
@@ -77,6 +78,10 @@ export const router = createBrowserRouter([
       {
         path: "/chat",
         element: <Chat />
+      },
+      {
+        path: "/wallet",
+        element: <Wallet />
       }
     ]
   }
