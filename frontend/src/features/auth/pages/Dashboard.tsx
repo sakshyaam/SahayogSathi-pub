@@ -19,7 +19,9 @@ import {
   Wallet,
   Clock,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  CalendarDays,
+  ArrowUpRight
 } from "lucide-react";
 
 const categories = [
@@ -243,54 +245,64 @@ const Dashboard = () => {
                     : null;
 
                 return (
-                  <div
+                  <Link
+                    to={`/post/${post._id}`}
                     key={post._id}
-                    className="group flex flex-col justify-between rounded-[2.5rem] border border-zinc-200 bg-white p-6 shadow-sm hover:shadow-xl hover:shadow-zinc-200/50 transition-all duration-300"
+                    className="group relative flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-6 transition-all duration-300 hover:border-zinc-300 hover:shadow-lg hover:shadow-zinc-200/40 hover:-translate-y-1 overflow-hidden"
                   >
+                    {/* Subtle Top Gradient Accent */}
+                    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-zinc-200 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+
                     <div>
-                      <div className="mb-4 flex items-center justify-between">
-                        <span className="rounded-full bg-zinc-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-600">
+                      <div className="mb-5 flex items-center justify-between">
+                        <span className="rounded-md bg-zinc-100 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-zinc-600">
                           {post.category}
                         </span>
                         {post.isUrgent && (
-                          <span className="rounded-full bg-rose-50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-rose-600 border border-rose-100 animate-pulse">
+                          <span className="flex items-center gap-1 rounded-md bg-rose-50 px-2.5 py-1 text-[10px] font-semibold text-rose-600 border border-rose-100/50">
+                            <span className="relative flex h-1.5 w-1.5">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-rose-500"></span>
+                            </span>
                             Urgent
                           </span>
                         )}
                       </div>
 
-                      <h3 className="mb-2 text-lg font-semibold text-black group-hover:text-zinc-700">
+                      <h3 className="mb-2.5 text-lg font-bold tracking-tight text-zinc-900 group-hover:text-black line-clamp-1">
                         {post.title}
                       </h3>
 
-                      <p className="mb-6 text-xs leading-relaxed text-zinc-500 line-clamp-3">
+                      <p className="mb-6 text-sm leading-relaxed text-zinc-500 line-clamp-2">
                         {post.description}
                       </p>
                     </div>
 
-                    <div>
-                      <div className="mb-6 grid grid-cols-2 gap-4 rounded-3xl bg-zinc-50 p-4 font-mono text-[11px]">
-                        <div>
-                          <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-400">
-                            Budget
-                          </p>
-                          <p className="font-semibold text-black">
-                            {post.currency} {post.budgetMin}-{post.budgetMax}
-                          </p>
+                    <div className="mt-auto">
+                      <div className="mb-6 flex items-center gap-6">
+                        <div className="flex items-center gap-2">
+                          <Wallet className="h-4 w-4 text-zinc-400" />
+                          <div>
+                            <p className="text-[10px] font-medium text-zinc-400">Budget</p>
+                            <p className="text-xs font-semibold text-zinc-800">
+                              {post.currency} {post.budgetMin}-{post.budgetMax}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-400">
-                            Deadline
-                          </p>
-                          <p className="font-semibold text-black">
-                            {new Date(post.deadline).toLocaleDateString()}
-                          </p>
+                        <div className="flex items-center gap-2">
+                          <CalendarDays className="h-4 w-4 text-zinc-400" />
+                          <div>
+                            <p className="text-[10px] font-medium text-zinc-400">Deadline</p>
+                            <p className="text-xs font-semibold text-zinc-800">
+                              {new Date(post.deadline).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </p>
+                          </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between border-t border-zinc-100 pt-4">
+                      <div className="flex items-center justify-between border-t border-zinc-100 pt-5">
                         <div className="flex items-center gap-3">
-                          <div className="h-8 w-8 rounded-full bg-zinc-200 overflow-hidden flex items-center justify-center border border-zinc-300">
+                          <div className="h-8 w-8 rounded-full bg-zinc-100 overflow-hidden flex items-center justify-center border border-zinc-200">
                             {postedBy?.avatar ? (
                               <img
                                 src={postedBy.avatar}
@@ -298,29 +310,27 @@ const Dashboard = () => {
                                 className="h-full w-full object-cover"
                               />
                             ) : (
-                              <div className="h-full w-full bg-zinc-300 flex items-center justify-center text-[10px] font-bold text-white">
+                              <div className="h-full w-full bg-zinc-200 flex items-center justify-center text-[10px] font-bold text-zinc-600">
                                 {postedBy?.username?.charAt(0).toUpperCase() || "?"}
                               </div>
                             )}
                           </div>
                           <div className="text-left">
-                            <p className="text-[11px] font-bold text-black">
+                            <p className="text-xs font-semibold text-zinc-900 leading-tight">
                               {postedBy?.fullname || "Unknown User"}
                             </p>
-                            <p className="text-[9px] text-zinc-400 truncate max-w-[120px]">
+                            <p className="text-[10px] text-zinc-500 truncate max-w-[120px]">
                               {postedBy?.university || "No Campus"}
                             </p>
                           </div>
                         </div>
-                        <Link
-                          to={`/post/${post._id}`}
-                          className="rounded-full bg-black hover:bg-zinc-800 px-4 py-2.5 text-[10px] font-bold uppercase tracking-wider text-white transition-all shadow-sm"
-                        >
-                          Details
-                        </Link>
+                        
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-50 text-zinc-400 transition-colors group-hover:bg-black group-hover:text-white">
+                          <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
             </div>

@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../services/auth.api";
-import { ArrowLeft, Clock, DollarSign, CheckCircle2, AlertCircle, FileText } from "lucide-react";
+import {
+  ArrowLeft,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  FileText,
+  Wallet,
+  CalendarDays,
+  ArrowRight,
+} from "lucide-react";
 
 interface TaskItem {
   _id: string;
@@ -120,48 +129,53 @@ const MyTasks = () => {
             {tasks.map((task) => (
               <div
                 key={task._id}
-                className="group flex flex-col justify-between rounded-[2.5rem] border border-zinc-200 bg-white p-6 shadow-sm hover:shadow-xl transition-all"
+                className="group relative flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-6 transition-all duration-300 hover:border-zinc-300 hover:shadow-lg hover:shadow-zinc-200/40 hover:-translate-y-1 overflow-hidden"
               >
+                {/* Subtle Top Gradient Accent */}
+                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-zinc-200 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+
                 <div>
-                  <div className="mb-4 flex items-center justify-between">
-                    <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-zinc-600">
+                  <div className="mb-5 flex items-center justify-between">
+                    <span className="rounded-md bg-zinc-100 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-zinc-600">
                       {task.post?.category || "Task"}
                     </span>
                     {getStatusBadge(task.status)}
                   </div>
 
-                  <h3 className="mb-2 text-xl font-semibold text-black">
+                  <h3 className="mb-2.5 text-lg font-bold tracking-tight text-zinc-900 group-hover:text-black line-clamp-1">
                     {task.post?.title || "Deleted Task"}
                   </h3>
 
-                  <p className="mb-6 text-sm text-zinc-600 line-clamp-3 leading-relaxed">
+                  <p className="mb-6 text-sm leading-relaxed text-zinc-500 line-clamp-2">
                     {task.post?.description || "No description available."}
                   </p>
                 </div>
 
-                <div>
-                  <div className="mb-6 grid grid-cols-2 gap-4 rounded-3xl bg-stone-50 p-4">
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
-                        Agreed Budget
-                      </p>
-                      <p className="font-semibold text-black flex items-center gap-0.5">
-                        {task.currency} {task.agreedAmount}
-                      </p>
+                <div className="mt-auto">
+                  <div className="mb-6 flex items-center gap-6">
+                    <div className="flex items-center gap-2">
+                      <Wallet className="h-4 w-4 text-zinc-400" />
+                      <div>
+                        <p className="text-[10px] font-medium text-zinc-400">Agreed Budget</p>
+                        <p className="text-xs font-semibold text-zinc-800">
+                          {task.currency} {task.agreedAmount}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
-                        Deadline
-                      </p>
-                      <p className="font-semibold text-black">
-                        {new Date(task.workDeadline).toLocaleDateString()}
-                      </p>
+                    <div className="flex items-center gap-2">
+                      <CalendarDays className="h-4 w-4 text-zinc-400" />
+                      <div>
+                        <p className="text-[10px] font-medium text-zinc-400">Deadline</p>
+                        <p className="text-xs font-semibold text-zinc-800">
+                          {new Date(task.workDeadline).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between border-t border-zinc-100 pt-4">
+                  <div className="flex items-center justify-between border-t border-zinc-100 pt-5">
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-zinc-200 overflow-hidden flex items-center justify-center">
+                      <div className="h-8 w-8 rounded-full bg-zinc-100 overflow-hidden flex items-center justify-center border border-zinc-200">
                         {task.client?.avatar ? (
                           <img
                             src={task.client.avatar}
@@ -169,16 +183,16 @@ const MyTasks = () => {
                             className="h-full w-full object-cover"
                           />
                         ) : (
-                          <div className="h-full w-full bg-zinc-300 flex items-center justify-center text-[10px] font-bold text-white">
+                          <div className="h-full w-full bg-zinc-200 flex items-center justify-center text-[10px] font-bold text-zinc-600">
                             {task.client?.username?.charAt(0).toUpperCase() || "?"}
                           </div>
                         )}
                       </div>
                       <div>
-                        <p className="text-xs font-bold text-black">
+                        <p className="text-xs font-semibold text-zinc-900 leading-tight">
                           {task.client?.fullname || "Unknown Client"}
                         </p>
-                        <p className="text-[10px] text-zinc-500">
+                        <p className="text-[10px] text-zinc-500 truncate max-w-[120px]">
                           {task.client?.university || "No University"}
                         </p>
                       </div>
@@ -187,9 +201,10 @@ const MyTasks = () => {
                     {task.post && (
                       <Link
                         to={`/post/${task.post._id}`}
-                        className="rounded-full bg-black px-5 py-2.5 text-[11px] font-bold uppercase tracking-wider text-white hover:bg-zinc-800 transition"
+                        className="flex items-center gap-1 rounded-full bg-black hover:bg-zinc-800 px-4 py-2.5 text-[10px] font-bold uppercase tracking-wider text-white transition-all shadow-sm"
                       >
                         {task.status === "active" ? "Submit Work" : "View Details"}
+                        <ArrowRight className="h-3 w-3" />
                       </Link>
                     )}
                   </div>

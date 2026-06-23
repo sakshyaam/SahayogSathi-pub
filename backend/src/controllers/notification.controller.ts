@@ -18,7 +18,10 @@ export const createNotification = async (data: {
 }) => {
   try {
     const notification = await Notification.create(data);
-    const populated = await notification.populate("sender", "fullname username avatar");
+    const populated = await notification.populate([
+      { path: "sender", select: "fullname username avatar" },
+      { path: "referenceId" }
+    ]);
 
     const receiverSocketId = getReceiverSocketId(data.recipient.toString());
     if (receiverSocketId) {
@@ -39,6 +42,7 @@ export const getMyNotifications = asyncHandler(async (req: Request, res: Respons
 
   const notifications = await Notification.find({ recipient: req.user._id })
     .populate("sender", "fullname username avatar")
+    .populate("referenceId")
     .sort({ createdAt: -1 })
     .limit(50);
 

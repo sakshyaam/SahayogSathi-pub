@@ -32,6 +32,7 @@ const notificationSchema = new Schema<INotification>(
     referenceId: {
       type: Schema.Types.ObjectId,
       required: true,
+      refPath: "referenceModel",
     },
     referenceModel: {
       type: String,

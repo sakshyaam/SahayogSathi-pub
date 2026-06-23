@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../services/auth.api";
 import { Bell, ArrowLeft, CheckCircle2, MessageSquare, Briefcase, DollarSign } from "lucide-react";
 
@@ -14,12 +14,15 @@ interface NotificationItem {
   message: string;
   isRead: boolean;
   createdAt: string;
+  referenceId?: any;
+  referenceModel?: string;
 }
 
 const NotificationPage = () => {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const fetchNotifications = async () => {
     try {
@@ -53,6 +56,24 @@ const NotificationPage = () => {
       );
     } catch (err: any) {
       console.error("Failed to mark as read:", err);
+    }
+  };
+
+  const handleNotificationClick = async (n: NotificationItem) => {
+    if (!n.isRead) {
+      await markSingleAsRead(n._id);
+    }
+
+    if ((n.referenceModel === "Order" || n.referenceModel === "Proposal") && n.referenceId) {
+      const postId = typeof n.referenceId.post === "string" ? n.referenceId.post : n.referenceId.post?._id;
+      if (postId) {
+        navigate(`/post/${postId}`);
+      }
+    } else if (n.referenceModel === "Post" && n.referenceId) {
+      const postId = typeof n.referenceId === "string" ? n.referenceId : n.referenceId._id;
+      if (postId) {
+        navigate(`/post/${postId}`);
+      }
     }
   };
 
@@ -112,7 +133,7 @@ const NotificationPage = () => {
             {notifications.map((n) => (
               <div
                 key={n._id}
-                onClick={() => !n.isRead && markSingleAsRead(n._id)}
+                onClick={() => handleNotificationClick(n)}
                 className={`flex items-start gap-4 rounded-[2rem] border p-5 transition cursor-pointer ${
                   n.isRead
                     ? "bg-white border-zinc-150"

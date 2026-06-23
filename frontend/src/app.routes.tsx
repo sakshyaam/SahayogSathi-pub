@@ -1,5 +1,5 @@
 import React from 'react';
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Outlet } from 'react-router-dom';
 import Login from './features/auth/pages/Login';
 import Register from './features/auth/pages/Register';
 import LandingPage from './features/auth/pages/LandingPage';
@@ -14,67 +14,81 @@ import NotificationPage from './features/auth/pages/NotificationPage';
 import MyTasks from './features/auth/pages/MyTasks';
 import DashboardLayout from './features/auth/components/DashboardLayout';
 import Wallet from './features/auth/pages/Wallet';
+import { NotificationListener } from './features/auth/components/NotificationListener';
+
+const RootLayout = () => {
+  return (
+    <>
+      <Outlet />
+      <NotificationListener />
+    </>
+  );
+};
 
 export const router = createBrowserRouter([
   {
-    path: "/",
-    element: <LandingPage />
-  },
-  {
-    path: "/login",
-    element: <Login />
-  },
-  {
-    path: "/register",
-    element: <Register />
-  },
-    // Moved to DashboardLayout children
-  {
-    path: "/mock-payment",
-    element: (
-      <ProtectedRoute>
-        <MockPayment />
-      </ProtectedRoute>
-    )
-  },
-  {
-    element: (
-      <ProtectedRoute>
-        <DashboardLayout />
-      </ProtectedRoute>
-    ),
+    element: <RootLayout />,
     children: [
       {
-        path: "/dashboard",
-        element: <Dashboard />
+        path: "/",
+        element: <LandingPage />
       },
       {
-        path: "/my-tasks",
-        element: <MyTasks />
+        path: "/login",
+        element: <Login />
       },
       {
-        path: "/myposts",
-        element: <MyPosts />
+        path: "/register",
+        element: <Register />
       },
       {
-        path: "/notifications",
-        element: <NotificationPage />
+        path: "/mock-payment",
+        element: (
+          <ProtectedRoute>
+            <MockPayment />
+          </ProtectedRoute>
+        )
       },
       {
-        path: "/chat",
-        element: <Chat />
-      },
-      {
-        path: "/createpost",
-        element: <CreatePost />
-      },
-      {
-        path: "/post/:postId",
-        element: <PostDetails />
-      },
-      {
-        path: "/wallet",
-        element: <Wallet />
+        element: (
+          <ProtectedRoute>
+            <DashboardLayout />
+          </ProtectedRoute>
+        ),
+        children: [
+          {
+            path: "/dashboard",
+            element: <Dashboard />
+          },
+          {
+            path: "/my-tasks",
+            element: <MyTasks />
+          },
+          {
+            path: "/myposts",
+            element: <MyPosts />
+          },
+          {
+            path: "/notifications",
+            element: <NotificationPage />
+          },
+          {
+            path: "/chat",
+            element: <Chat />
+          },
+          {
+            path: "/createpost",
+            element: <CreatePost />
+          },
+          {
+            path: "/post/:postId",
+            element: <PostDetails />
+          },
+          {
+            path: "/wallet",
+            element: <Wallet />
+          }
+        ]
       }
     ]
   }

@@ -15,9 +15,7 @@ import {
   CheckCircle2
 } from "lucide-react";
 
-/* ══════════════════════ SUBCOMPONENTS ══════════════════════ */
 
-// 1. Hero Floating Glass Orb Component (Aesthetic Backdrop)
 const FloatingGlassOrb = () => (
   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none z-0">
     <motion.div
@@ -33,22 +31,16 @@ const FloatingGlassOrb = () => (
       }}
       className="relative w-[320px] h-[320px] sm:w-[500px] sm:h-[500px]"
     >
-      {/* Deep cosmic indigo background glow */}
       <div className="absolute inset-0 bg-indigo-500/10 rounded-full blur-[100px] mix-blend-screen" />
 
-      {/* Outer translucent glass ring */}
       <div className="absolute inset-4 rounded-full border border-white/10 backdrop-blur-3xl shadow-[inset_0_0_50px_rgba(255,255,255,0.05)] bg-gradient-to-tr from-white/5 to-transparent" />
 
-      {/* Main glass heart/orb center */}
       <div className="absolute inset-16 rounded-full border border-white/20 backdrop-blur-2xl shadow-[0_30px_70px_rgba(0,0,0,0.6),inset_0_0_40px_rgba(255,255,255,0.1)] bg-gradient-to-br from-white/10 via-transparent to-indigo-500/10 flex items-center justify-center">
-        {/* Abstract 3D Graduation Cap or Book SVG nested in the glass */}
         <BookOpen className="w-20 h-20 text-white/25 filter drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] animate-pulse" />
       </div>
 
-      {/* High-contrast glossy reflection glare */}
       <div className="absolute top-1/4 left-1/4 w-40 h-20 bg-white/15 rounded-full blur-lg transform -rotate-45" />
 
-      {/* Small satellite orbiting elements */}
       <motion.div
         animate={{
           x: [-50, 50, -50],
@@ -77,7 +69,6 @@ const FloatingGlassOrb = () => (
   </div>
 );
 
-// 2. Campus Dispatch Map Widget (Card 1)
 const LiveRequestsMap = () => {
   const points = [
     { x: 30, y: 40, label: "TU Kirtipur: DBMS ER-Diagram", active: true },
@@ -100,20 +91,17 @@ const LiveRequestsMap = () => {
         </span>
       </div>
 
-      {/* Vector/Dotted Map Mock Grid */}
       <div className="absolute inset-0 opacity-20 pointer-events-none grid grid-cols-12 grid-rows-6 gap-2 p-4">
         {Array.from({ length: 72 }).map((_, i) => (
           <div key={i} className="border-[0.5px] border-white/10 rounded-sm" />
         ))}
       </div>
 
-      {/* Glowing network lines */}
       <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40">
         <path d="M 60,80 L 140,60 L 100,140 Z" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" strokeDasharray="3,3" />
         <path d="M 140,60 L 220,150 L 100,140" fill="none" stroke="rgba(129, 140, 248, 0.15)" strokeWidth="1" />
       </svg>
 
-      {/* Interactive Floating Campus Nodes */}
       {points.map((p, idx) => (
         <motion.div
           key={idx}
@@ -140,7 +128,6 @@ const LiveRequestsMap = () => {
   );
 };
 
-// 3. Proposal Bids Tracker Widget (Card 2)
 const ProposalBidsTracker = () => {
   return (
     <div className="relative w-full h-full min-h-[220px] bg-black/40 p-6 flex flex-col justify-between overflow-hidden">
@@ -155,7 +142,6 @@ const ProposalBidsTracker = () => {
       </div>
 
       <div className="my-4 flex items-center justify-center relative h-16">
-        {/* Animated ECG Pulse Path representing proposal submission signals */}
         <svg className="w-full h-full" viewBox="0 0 200 60">
           <motion.path
             d="M0,30 L40,30 L46,10 L52,50 L58,25 L64,35 L70,30 L100,30 L106,5 L112,55 L118,20 L124,38 L130,30 L160,30 L200,30"
@@ -188,7 +174,6 @@ const ProposalBidsTracker = () => {
   );
 };
 
-// 4. Rollup Counter Component (Card 3)
 const RollupCounter = ({ target }: { target: number }) => {
   const [count, setCount] = useState(0);
   const elementRef = useRef<HTMLDivElement>(null);
@@ -201,7 +186,7 @@ const RollupCounter = ({ target }: { target: number }) => {
           setHasRun(true);
           let start = 0;
           const end = target;
-          const duration = 1500; // ms
+          const duration = 1500;
           const stepTime = Math.abs(Math.floor(duration / 100));
 
           const timer = setInterval(() => {
@@ -243,11 +228,9 @@ const RollupCounter = ({ target }: { target: number }) => {
   );
 };
 
-// 5. Urgent Deadline SOS (Card 4)
 const UrgentDeadlineSOS = () => {
   return (
     <div className="relative w-full h-full min-h-[220px] border border-red-500/20 bg-red-500/5 p-6 flex flex-col justify-between overflow-hidden shadow-[inset_0_0_20px_rgba(239,68,68,0.05)]">
-      {/* Pulsating red glow border */}
       <div className="absolute inset-0 border border-red-500/10 animate-pulse pointer-events-none" />
 
       <div className="flex items-center justify-between">
@@ -276,7 +259,6 @@ const UrgentDeadlineSOS = () => {
   );
 };
 
-// 6. Sleek Terminal Logs Feed Component (Card 5 - Discord/Telegram Bot Bridge)
 const TerminalLogs = () => {
   const [logs, setLogs] = useState<string[]>([
     "[15:40:01] SYS: Initializing SahayogSathi Discord-Bridge...",
@@ -302,7 +284,7 @@ const TerminalLogs = () => {
         setLogs(prev => [...prev.slice(1), extraLogs[count]]);
         count++;
       } else {
-        count = 0; // restart cycle
+        count = 0;
       }
     }, 4500);
 
@@ -311,7 +293,6 @@ const TerminalLogs = () => {
 
   return (
     <div className="relative w-full h-full min-h-[300px] bg-black/60 font-mono p-5 flex flex-col justify-between border border-white/5">
-      {/* Terminal Title Bar */}
       <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-3">
         <div className="flex items-center gap-1.5">
           <Terminal className="w-3.5 h-3.5 text-indigo-400" />
@@ -324,7 +305,6 @@ const TerminalLogs = () => {
         </div>
       </div>
 
-      {/* Scrolling Text Window */}
       <div className="flex-1 text-[10px] space-y-2 overflow-y-auto leading-relaxed text-indigo-300">
         <AnimatePresence>
           {logs.map((log, idx) => (
@@ -351,13 +331,11 @@ const TerminalLogs = () => {
 };
 
 
-/* ══════════════════════ MAIN COMPONENT ══════════════════════ */
 
 const LandingPage = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll();
 
-  // Parallax Y offset mappings for different elements in the "Lift" section
   const yLiftSlow = useTransform(scrollYProgress, [0.35, 0.85], [100, -80]);
   const yLiftMedium = useTransform(scrollYProgress, [0.35, 0.85], [200, -150]);
   const yLiftFast = useTransform(scrollYProgress, [0.35, 0.85], [300, -260]);
@@ -365,13 +343,11 @@ const LandingPage = () => {
   return (
     <div ref={containerRef} className="min-h-screen text-white relative overflow-hidden bg-[#050505]">
 
-      {/* Cosmic background effects */}
       <div className="pointer-events-none fixed inset-0 z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[60vw] h-[60vw] rounded-full bg-indigo-900/5 blur-[150px]" />
         <div className="absolute bottom-[20%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-indigo-500/5 blur-[150px]" />
       </div>
 
-      {/* ════════════════════ NAV BAR ════════════════════ */}
       <nav className="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl z-50 flex items-center justify-between border border-white/10 bg-black/40 backdrop-blur-xl px-6 py-4">
         <Link to="/" className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center bg-white text-black font-display font-black text-lg">
@@ -380,7 +356,6 @@ const LandingPage = () => {
           <span className="font-display font-black text-base tracking-tight uppercase">SAHAYOGSATHI</span>
         </Link>
 
-        {/* Minimal Navigation links */}
         <div className="hidden md:flex items-center gap-8 font-mono text-[10px] tracking-wider uppercase text-white/50">
           <a href="#grid" className="hover:text-white transition-colors">THE BENTO GRID</a>
           <a href="#lift" className="hover:text-white transition-colors">DEADLINE LIFT</a>
@@ -403,10 +378,8 @@ const LandingPage = () => {
         </div>
       </nav>
 
-      {/* ════════════════════ HERO SECTION ════════════════════ */}
       <section className="relative min-h-[90vh] flex flex-col items-center justify-center text-center px-6 pt-28 pb-16 z-10">
 
-        {/* Animated Glass Orb behind title */}
         <FloatingGlassOrb />
 
         <div className="relative max-w-4xl z-10 select-none">
@@ -432,7 +405,6 @@ const LandingPage = () => {
           </motion.p>
         </div>
 
-        {/* Hero Actions - Rigid Square buttons, no generic round pills */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -454,10 +426,8 @@ const LandingPage = () => {
         </motion.div>
       </section>
 
-      {/* ════════════════════ BENTO SUPPORT GRID ════════════════════ */}
       <section id="grid" className="max-w-6xl mx-auto px-6 py-20 relative z-10">
 
-        {/* Bento Header */}
         <div className="mb-12">
           <span className="font-mono text-xs uppercase tracking-widest text-indigo-400">CAMPUS MARKETPLACE ACTIVITY</span>
           <h2 className="font-display font-black text-3xl sm:text-5xl text-white mt-2 leading-[0.95] tracking-tighter uppercase">
@@ -465,30 +435,24 @@ const LandingPage = () => {
           </h2>
         </div>
 
-        {/* 12-Column Grid Layout */}
         <div className="grid grid-cols-12 gap-4">
 
-          {/* Card 1: Map Widget - 7 columns on desktop */}
           <div className="col-span-12 lg:col-span-7 border border-white/10 backdrop-blur-xl transition-all duration-500 hover:border-indigo-400/30 group">
             <LiveRequestsMap />
           </div>
 
-          {/* Card 2: Proposal Tracker - 5 columns on desktop */}
           <div className="col-span-12 lg:col-span-5 border border-white/10 backdrop-blur-xl transition-all duration-500 hover:border-indigo-400/30 group">
             <ProposalBidsTracker />
           </div>
 
-          {/* Card 3: Volunteer Rollup Counter - 4 columns on desktop */}
           <div className="col-span-12 sm:col-span-6 lg:col-span-4 border border-white/10 backdrop-blur-xl transition-all duration-500 hover:border-indigo-400/30 group">
             <RollupCounter target={4820} />
           </div>
 
-          {/* Card 4: Emergency SOS (Academic Deadlines SOS) - 4 columns on desktop */}
           <div className="col-span-12 sm:col-span-6 lg:col-span-4 border border-white/10 backdrop-blur-xl transition-all duration-500 hover:border-red-500/40">
             <UrgentDeadlineSOS />
           </div>
 
-          {/* Card 5: Sleek Terminal Feed Widget - 4 columns on desktop */}
           <div className="col-span-12 lg:col-span-4 border border-white/10 backdrop-blur-xl transition-all duration-500 hover:border-indigo-400/30">
             <TerminalLogs />
           </div>
@@ -496,7 +460,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* ════════════════════ THE "LIFT" PARALLAX SECTION ════════════════════ */}
       <section id="lift" className="relative min-h-screen py-32 flex flex-col justify-center overflow-hidden z-10 border-t border-white/5">
         <div className="max-w-5xl mx-auto px-6 relative w-full grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
 
@@ -512,10 +475,8 @@ const LandingPage = () => {
             </p>
           </div>
 
-          {/* Parallax Floating Text Blocks */}
           <div className="relative h-[400px] flex flex-col justify-center">
 
-            {/* Block 1 - Slow lift */}
             <motion.div
               style={{ y: yLiftSlow }}
               className="absolute top-0 right-4 md:right-12 p-6 border border-white/10 bg-white/5 backdrop-blur-md max-w-xs"
@@ -524,7 +485,6 @@ const LandingPage = () => {
               <p className="font-mono text-[10px] text-white/60 mt-2">Post assignments, programming projects, or lab reports and set your budget range. Peer helpers bid competitive rates instantly.</p>
             </motion.div>
 
-            {/* Block 2 - Medium lift */}
             <motion.div
               style={{ y: yLiftMedium }}
               className="absolute bottom-24 left-0 p-6 border border-indigo-400/20 bg-indigo-900/5 backdrop-blur-md max-w-xs"
@@ -533,7 +493,6 @@ const LandingPage = () => {
               <p className="font-mono text-[10px] text-indigo-300/80 mt-2">Turn your development, design, report writing, or calculus solving skills into a premium campus side-hustle.</p>
             </motion.div>
 
-            {/* Block 3 - Fast lift */}
             <motion.div
               style={{ y: yLiftFast }}
               className="absolute top-1/3 left-10 md:left-24 p-6 border border-white/10 bg-white/5 backdrop-blur-xl max-w-xs shadow-2xl"
@@ -546,7 +505,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* ════════════════════ CORE CAPABILITIES SECTION ════════════════════ */}
       <section id="features" className="max-w-6xl mx-auto px-6 py-24 relative z-10 border-t border-white/5">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
 
@@ -598,7 +556,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* ════════════════════ FOOTER ════════════════════ */}
       <footer className="border-t border-white/10 bg-black/60 relative z-10 py-20 px-6">
         <div className="max-w-6xl mx-auto">
 

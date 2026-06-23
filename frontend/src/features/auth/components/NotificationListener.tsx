@@ -2,16 +2,20 @@ import React, { useEffect, useState } from "react";
 import { useSocket } from "../../../context/socket.context";
 import { AnimatePresence, motion } from "framer-motion";
 import { Bell, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface PopNotification {
   id: string;
   message: string;
   senderName: string;
+  referenceId?: any;
+  referenceModel?: string;
 }
 
 export const NotificationListener = () => {
   const { socket } = useSocket();
   const [toasts, setToasts] = useState<PopNotification[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!socket) return;
@@ -21,6 +25,8 @@ export const NotificationListener = () => {
         id: notification._id || Date.now().toString(),
         message: notification.message,
         senderName: notification.sender?.fullname || "Someone",
+        referenceId: notification.referenceId,
+        referenceModel: notification.referenceModel,
       };
 
       setToasts((prev) => [...prev, newToast]);
@@ -42,6 +48,21 @@ export const NotificationListener = () => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
+  const handleToastClick = (toast: PopNotification) => {
+    if ((toast.referenceModel === "Order" || toast.referenceModel === "Proposal") && toast.referenceId) {
+      const postId = typeof toast.referenceId.post === "string" ? toast.referenceId.post : toast.referenceId.post?._id;
+      if (postId) {
+        navigate(`/post/${postId}`);
+      }
+    } else if (toast.referenceModel === "Post" && toast.referenceId) {
+      const postId = typeof toast.referenceId === "string" ? toast.referenceId : toast.referenceId._id;
+      if (postId) {
+        navigate(`/post/${postId}`);
+      }
+    }
+    removeToast(toast.id);
+  };
+
   return (
     <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-3">
       <AnimatePresence>
@@ -51,7 +72,8 @@ export const NotificationListener = () => {
             initial={{ opacity: 0, y: 50, scale: 0.3 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
-            className="flex w-80 items-start gap-3 rounded-[1.5rem] border border-zinc-200 bg-white p-4 shadow-2xl"
+            className="flex w-80 items-start gap-3 rounded-[1.5rem] border border-zinc-200 bg-white p-4 shadow-2xl cursor-pointer hover:shadow-lg transition"
+            onClick={() => handleToastClick(toast)}
           >
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black text-white">
               <Bell className="h-5 w-5" />
@@ -61,7 +83,10 @@ export const NotificationListener = () => {
               <p className="mt-1 text-xs text-zinc-600 leading-relaxed">{toast.message}</p>
             </div>
             <button
-              onClick={() => removeToast(toast.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                removeToast(toast.id);
+              }}
               className="text-zinc-400 hover:text-black transition"
             >
               <X className="h-4 w-4" />

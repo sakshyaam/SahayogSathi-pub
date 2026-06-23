@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../services/auth.api";
 import { IPost } from "../../../types";
-import { ArrowLeft, Clock, CheckCircle2, AlertCircle, FileText, Trash2, Edit } from "lucide-react";
+import { ArrowLeft, Clock, CheckCircle2, AlertCircle, FileText, Plus, Trash2, Wallet, CalendarDays } from "lucide-react";
 
 const statusStyles: Record<string, string> = {
   open: "bg-green-100 text-green-700 border-green-200",
@@ -120,16 +120,23 @@ const MyPosts = () => {
             {filteredPosts.map((post) => (
               <div
                 key={post._id}
-                className="group flex flex-col justify-between rounded-[2.5rem] border border-zinc-200 bg-white p-6 shadow-sm hover:shadow-xl transition-all"
+                className="group relative flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-6 transition-all duration-300 hover:border-zinc-300 hover:shadow-lg hover:shadow-zinc-200/40 hover:-translate-y-1 overflow-hidden"
               >
+                {/* Subtle Top Gradient Accent */}
+                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-zinc-200 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+
                 <div className="flex flex-col gap-2">
-                  <div className="flex items-center justify-between">
-                    <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-zinc-600">
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="rounded-md bg-zinc-100 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-zinc-600">
                       {post.category}
                     </span>
                     <div className="flex items-center gap-2">
                       {post.isUrgent && (
-                        <span className="rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-rose-600">
+                        <span className="flex items-center gap-1 rounded-md bg-rose-50 px-2.5 py-1 text-[10px] font-semibold text-rose-600 border border-rose-100/50">
+                          <span className="relative flex h-1.5 w-1.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-rose-500"></span>
+                          </span>
                           Urgent
                         </span>
                       )}
@@ -137,35 +144,47 @@ const MyPosts = () => {
                     </div>
                   </div>
 
-                  <h3 className="text-xl font-semibold text-black mt-2">
+                  <h3 className="text-lg font-bold tracking-tight text-zinc-900 mt-2">
                     {post.title}
                   </h3>
 
-                  <p className="text-sm text-zinc-600 line-clamp-3 leading-relaxed mt-1">
+                  <p className="text-sm text-zinc-500 line-clamp-2 leading-relaxed mt-1">
                     {post.description}
                   </p>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-zinc-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <div className="flex items-center gap-6 text-sm text-zinc-500 font-mono">
-                    <div>
-                      Budget: <span className="font-semibold text-black">{post.currency} {post.budgetMin}-{post.budgetMax}</span>
+                <div className="mt-6 pt-5 border-t border-zinc-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-2">
+                      <Wallet className="h-4 w-4 text-zinc-400" />
+                      <div>
+                        <p className="text-[10px] font-medium text-zinc-400">Budget</p>
+                        <p className="text-xs font-semibold text-zinc-800">
+                          {post.currency} {post.budgetMin}-{post.budgetMax}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      Deadline: <span className="font-semibold text-black">{new Date(post.deadline).toLocaleDateString()}</span>
+                    <div className="flex items-center gap-2">
+                      <CalendarDays className="h-4 w-4 text-zinc-400" />
+                      <div>
+                        <p className="text-[10px] font-medium text-zinc-400">Deadline</p>
+                        <p className="text-xs font-semibold text-zinc-800">
+                          {new Date(post.deadline).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <Link
                       to={`/post/${post._id}`}
-                      className="rounded-full border border-zinc-300 bg-white px-5 py-2 text-xs font-bold uppercase tracking-wider text-zinc-700 hover:border-zinc-400"
+                      className="rounded-full bg-black hover:bg-zinc-800 px-5 py-2 text-[10px] font-bold uppercase tracking-wider text-white transition-all shadow-sm"
                     >
                       View Bids
                     </Link>
                     <button
                       onClick={() => handleDelete(post._id)}
-                      className="rounded-full border border-red-200 bg-red-50 p-2 text-red-600 hover:bg-red-100 hover:text-red-700 transition"
+                      className="rounded-full border border-red-200 bg-red-50 p-2 text-red-600 hover:bg-red-600 hover:text-white transition-colors"
                       title="Delete Post"
                     >
                       <Trash2 className="h-4 w-4" />
